@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:self_driving_car/home_page.dart';
+import 'package:self_driving_car/main_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomePage(),
+      home: const MainPage(),
     );
   }
 }

@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none'
 
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: '>=2.18.0-179.0.dev <3.0.0'
@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.0.15
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:
