@@ -1,4 +1,4 @@
-import 'package:self_driving_car/model/car.dart';
+import 'package:self_driving_car/controller/model/car.dart';
 
 class Controls {
   bool forward = false;

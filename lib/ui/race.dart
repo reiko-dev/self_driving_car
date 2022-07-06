@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:self_driving_car/model/race_controller.dart';
-import 'package:self_driving_car/model/car.dart';
+import 'package:self_driving_car/controller/model/car.dart';
+import 'package:self_driving_car/controller/model/sensor.dart';
+import 'package:self_driving_car/controller/race_controller.dart';
 import 'package:self_driving_car/ui/road.dart';
-import 'package:self_driving_car/model/sensor.dart';
 import 'package:self_driving_car/utils.dart';
 
 class Race extends StatefulWidget {
@@ -25,21 +25,23 @@ class _RaceState extends State<Race> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      init();
+    });
   }
 
-  void init(RaceController orchestrator) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final box = context.findRenderObject() as RenderBox;
-      final road = Road(width: 300, x: box.paintBounds.center.dx);
-      await orchestrator.init(road);
+  void init() async {
+    final orchestrator = Provider.of<RaceController>(context, listen: false);
+    final box = context.findRenderObject() as RenderBox;
+    final road = Road(width: 300, x: box.paintBounds.center.dx);
+    await orchestrator.init(road);
 
-      controller.addListener(() {
-        orchestrator.animate();
-      });
-      setState(() {
-        controller.repeat();
-      });
+    controller.addListener(() {
+      orchestrator.animate();
     });
+
+    controller.repeat();
   }
 
   @override
@@ -61,7 +63,6 @@ class _RaceState extends State<Race> with SingleTickerProviderStateMixin {
           child: Consumer<RaceController>(
             builder: (context, orchestrator, _) {
               if (orchestrator.isLoading) {
-                init(orchestrator);
                 return const SizedBox.shrink();
               }
 
@@ -123,7 +124,8 @@ class RacePainter extends CustomPainter {
       drawCar(cars[i], canvas, color: defaultCarColor);
     }
 
-    drawCar(bestCar, canvas, color: bestCarColor, drawSensor: true);
+    drawCar(bestCar, canvas, color: bestCarColor);
+    drawSensor(canvas, bestCar.sensor!);
 
     canvas.restore();
   }
@@ -157,8 +159,7 @@ class RacePainter extends CustomPainter {
     }
   }
 
-  void drawCar(Car car, Canvas canvas,
-      {required Color color, bool drawSensor = false}) {
+  void drawCar(Car car, Canvas canvas, {required Color color}) {
     final paint = Paint();
 
     if (car.isDamaged) {
@@ -173,10 +174,6 @@ class RacePainter extends CustomPainter {
       ..lineTo(car.polygon[3].dx, car.polygon[3].dy);
 
     canvas.drawPath(path, paint);
-
-    if (car.sensor != null && drawSensor) {
-      this.drawSensor(canvas, car.sensor!);
-    }
   }
 
   void drawSensor(Canvas canvas, Sensor sensor) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:self_driving_car/model/race_controller.dart';
+import 'package:self_driving_car/controller/race_controller.dart';
 import 'package:self_driving_car/ui/race.dart';
 import 'package:self_driving_car/ui/network_visualizer.dart';
 
@@ -12,6 +13,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  int? i;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -25,11 +27,7 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: const [
             Race(),
-            Expanded(
-              child: SizedBox(
-                child: MainButtons(),
-              ),
-            ),
+            MainButtons(),
             NetworkVisualizer(),
           ],
         ),
@@ -47,25 +45,80 @@ class MainButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Spacer(),
+
+        //AIs text field
+        SizedBox(
+          width: 150,
+          child: TextField(
+            decoration: const InputDecoration(
+              hintText: "Number greater than 0",
+              label: Text(
+                "AIs number:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            controller: context.read<RaceController>().aisNumberTextController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (val) {
+              if (int.tryParse(val) == null) {
+                return;
+              }
+              context.read<RaceController>().numberOfAICars = int.parse(val);
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        //Mutation Factor
+        SizedBox(
+          width: 150,
+          child: TextField(
+            decoration: const InputDecoration(
+              hintText: "Value between 0 and 1",
+              label: Text(
+                "Mutation Factor:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            controller:
+                context.read<RaceController>().mutationFactorTextController,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              if (double.tryParse(val) == null) {
+                return;
+              }
+              context.read<RaceController>().mutationFactor = double.parse(val);
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () {
+            context.read<RaceController>().reload();
+          },
+          child: const Text("Reload"),
+        ),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             context.read<RaceController>().saveBrain();
           },
-          child: const Text("Save"),
+          child: const Text("Save Brain"),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             context.read<RaceController>().discardBrain();
           },
-          child: const Text("Discard"),
+          child: const Text("Discard Brain"),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             context.read<RaceController>().generateJson();
           },
-          child: const Text("Generate .json"),
+          child: const Text("brain.json"),
         ),
         Consumer<RaceController>(
           builder: (context, value, child) {

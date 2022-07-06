@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:self_driving_car/model/network.dart';
-import 'package:self_driving_car/model/race_controller.dart';
+import 'package:self_driving_car/controller/model/network.dart';
+import 'package:self_driving_car/controller/race_controller.dart';
 import 'package:self_driving_car/utils.dart';
 
 class NetworkVisualizer extends StatefulWidget {
@@ -53,10 +53,11 @@ class _NetworkVisualizerState extends State<NetworkVisualizer>
 class VisualizerPainter extends CustomPainter {
   VisualizerPainter(this.network, {super.repaint});
   static const nodeRadius = 18.0;
-  static List<String> outputLabels = ['🠉', '🠈', '🠊', '🠋'];
+  static List<String> outputLabels = ['⬆', '⬅', '➡', '⬇'];
   final NeuralNetwork network;
 
   static final strokeTextStyle = TextStyle(
+    fontFamily: "NotoSansJP",
     fontSize: nodeRadius,
     foreground: Paint()
       ..style = PaintingStyle.stroke
@@ -65,6 +66,7 @@ class VisualizerPainter extends CustomPainter {
   );
 
   static const textStyle = TextStyle(
+    fontFamily: "NotoSansJP",
     fontSize: nodeRadius * 1,
     color: Colors.black,
   );
@@ -73,8 +75,6 @@ class VisualizerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = Colors.black);
     drawNetwork(canvas, size, network);
-    //TODO: transfer to the Visualize Widget.
-    // networkCtx.lineDashOffset = -time / 160;
   }
 
   @override
@@ -239,7 +239,7 @@ class VisualizerPainter extends CustomPainter {
       textWidthBasis: TextWidthBasis.parent,
     );
 
-    final offset = Offset(x - nodeRadius * 0.45, top - nodeRadius * 0.67);
+    final offset = Offset(x - nodeRadius * 0.5, top - nodeRadius * 0.8);
 
     //Stroke
     txtPainter.text = TextSpan(text: label, style: strokeTextStyle);
